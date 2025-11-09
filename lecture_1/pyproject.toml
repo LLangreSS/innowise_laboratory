@@ -1,0 +1,15 @@
+[project]
+name = "lecture_1"
+version = "0.1.0"
+description = "Innowise Laboratory — Lecture 1: Colorama Hello World"
+authors = [{name = "LLangreSS", email = "maxim.demidov99@gmail.com"}]
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = [
+    "colorama==0.4.6",
+]
+
+
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"]
+build-backend = "setuptools.build_meta"

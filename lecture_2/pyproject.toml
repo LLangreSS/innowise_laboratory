@@ -1,0 +1,15 @@
+[project]
+name = "user-profile"
+version = "0.1.0"
+description = "Innowise Laboratory — Lecture 2: A simple tool to generate user life-stage profiles based on age."
+authors = [
+    {name = "LLangreSS", email = "maxim.demidov99@gmail.com"},
+]
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = []
+
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"

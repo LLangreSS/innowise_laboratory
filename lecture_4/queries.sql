@@ -1,16 +1,16 @@
 --1.Create tables
-    CREATE TABLE IF NOT EXISTS students(
-        id integer PRIMARY KEY,
-        full_name text,
-        birth_year integer
+    CREATE TABLE IF NOT EXISTS students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    birth_year INTEGER NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS grades(
-        id integer PRIMARY KEY,
-        student_id integer,
-        subject text,
-        grade integer check (grade between 1 and 100),
-        foreign key (student_id) references students(id)
+    CREATE TABLE IF NOT EXISTS grades (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        subject TEXT NOT NULL,
+        grade INTEGER NOT NULL CHECK (grade BETWEEN 1 AND 100),
+        FOREIGN KEY (student_id) REFERENCES students(id)
     );
 
 --2.Insert data
@@ -54,46 +54,63 @@
     (9, 'Math', 89),
     (9, 'Art', 92);
 
+--Indexes
+    CREATE INDEX IF NOT EXISTS idx_students_full_name ON students(full_name);
+    CREATE INDEX IF NOT EXISTS idx_students_birth_year ON students(birth_year);
+    CREATE INDEX IF NOT EXISTS idx_grades_student_id ON grades(student_id);
+    CREATE INDEX IF NOT EXISTS idx_grades_subject ON grades(subject);
+    CREATE INDEX IF NOT EXISTS idx_grades_grade ON grades(grade);
+
 --3.Find all grades for a specific student(Alice Johnson)
-    SELECT g.grade
+    SELECT
+        s.full_name,
+        g.subject,
+        g.grade
     FROM students AS s
-    INNER JOIN grades AS g
-    ON s.id = g.student_id
-    WHERE s.full_name = 'Alice Johnson';
+    INNER JOIN grades g ON s.id = g.student_id
+    WHERE s.full_name = 'Alice Johnson'
+    ORDER BY g.subject;
 
 --4.Calculate the average grade per student
     SELECT
         s.full_name,
-        ROUND(AVG(g.grade), 2) AS average_grade_per_student
+        ROUND(AVG(g.grade), 2) AS average_grade
     FROM students AS s
-    INNER JOIN grades AS g ON s.id = g.student_id
-    GROUP BY s.id;
+    LEFT JOIN grades AS g ON s.id = g.student_id
+    GROUP BY s.id, s.full_name
+    ORDER BY average_grade DESC;
 
 --5.List all students born after 2004
-    SELECT s.full_name, s.birth_year
-    FROM students as s
-    WHERE s.birth_year > 2004;
+    SELECT
+        full_name,
+        birth_year
+    FROM students
+    WHERE birth_year > 2004
+    ORDER BY birth_year, full_name;
 
 --6.Create a query that lists all subjects and their average grades
     SELECT
-        g.subject,
-        ROUND(AVG(g.grade), 2) AS average_per_subject
-    FROM grades AS g
-    GROUP BY g.subject
-    ORDER BY average_per_subject DESC, g.subject;
+        subject,
+        ROUND(AVG(grade), 2) AS average_grade,
+        COUNT(*) AS number_of_grades
+    FROM grades
+    GROUP BY subject
+    ORDER BY average_grade DESC, subject;
 
 --7.Find top 3 students with the highest average grades
     SELECT
         s.full_name,
-        ROUND(AVG(g.grade), 2) AS average_per_student
+        ROUND(AVG(g.grade), 2) AS average_grade
     FROM students AS s
-    INNER JOIN grades AS g ON g.student_id = s.id
+    INNER JOIN grades AS g ON s.id = g.student_id
     GROUP BY s.id, s.full_name
-    ORDER BY average_per_student DESC
+    ORDER BY average_grade DESC
     LIMIT 3;
 
 --8.Show all students who have scored below 80 in any subject
-    SELECT DISTINCT s.full_name
+    SELECT DISTINCT
+        s.full_name
     FROM students AS s
     INNER JOIN grades AS g ON s.id = g.student_id
-    where g.grade < 80;
+    WHERE g.grade < 80
+    ORDER BY s.full_name
